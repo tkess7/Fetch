@@ -8,47 +8,63 @@
 import SwiftUI
 
 struct RecipeRowView: View {
-    @State private var image: UIImage?
+    @State private var largeImage: UIImage?
     
     let cuisine: String
+    let largePhotoURL: String?
     let name: String
     let smallPhotoURL: String?
     
     var body: some View {
-        HStack(spacing: 24) {
-            if let image {
-                Image(uiImage: image)
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 48, height: 48)
-                    .clipShape(RoundedRectangle(cornerRadius: 8.0))
+        Group {
+            if let largeImage {
+                DisclosureGroup {
+                    Image(uiImage: largeImage)
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                } label: {
+                    RecipeLabelView(cuisine: cuisine, name: name, smallPhotoURL: smallPhotoURL)
+                }
             } else {
-                Image(systemName: "camera.metering.unknown")
-                    .resizable()
-                    .aspectRatio(contentMode: .fill)
-                    .frame(width: 48, height: 48)
-            }
-            
-            VStack(alignment: .leading, spacing: 8) {
-                Text(name)
-                    .font(.headline)
-                Text(cuisine)
-                    .font(.subheadline)
+                RecipeLabelView(cuisine: cuisine, name: name, smallPhotoURL: smallPhotoURL)
             }
         }
         .task {
-            if let smallPhotoURL {
-                let fetchedImage = await ImageFetcher.shared.fetchImage(for: smallPhotoURL)
-                image = fetchedImage
+            if let largePhotoURL {
+                let fetchedLargeImage = await ImageFetcher.shared.fetchImage(for: largePhotoURL)
+                largeImage = fetchedLargeImage
             }
         }
     }
 }
 
-#Preview("No recipe image") {
-    RecipeRowView(cuisine: "Malaysian", name: "Apam Balik", smallPhotoURL: nil)
+#Preview("No images") {
+    RecipeRowView(cuisine: "Malaysian",
+                  largePhotoURL: nil,
+                  name: "Apam Balik",
+                  smallPhotoURL: nil)
 }
 
-#Preview("Recipe with image") {
-    RecipeRowView(cuisine: "Malaysian", name: "Apam Balik", smallPhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")
+#Preview("Small image, no large image") {
+    RecipeRowView(cuisine: "Malaysian",
+                  largePhotoURL: nil,
+                  name: "Apam Balik",
+                  smallPhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")
+    .padding()
+}
+
+#Preview("Large image, no small image") {
+    RecipeRowView(cuisine: "Malaysian",
+                  largePhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/large.jpg",
+                  name: "Apam Balik",
+                  smallPhotoURL: nil)
+    .padding()
+}
+
+#Preview("Both images") {
+    RecipeRowView(cuisine: "Malaysian",
+                  largePhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/large.jpg",
+                  name: "Apam Balik",
+                  smallPhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")
+    .padding()
 }

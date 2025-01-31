@@ -24,7 +24,7 @@ struct RecipeListView: View {
     var body: some View {
         NavigationStack {
             List(recipeSearchResult) { recipe in
-                RecipeRowView(cuisine: recipe.cuisine, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL)
+                RecipeRowView(cuisine: recipe.cuisine, largePhotoURL: recipe.largePhotoURL, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL)
             }
             .overlay {
                 switch recipesViewModel.recipeViewState {
