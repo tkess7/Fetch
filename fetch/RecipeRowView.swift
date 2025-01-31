@@ -8,24 +8,20 @@
 import SwiftUI
 
 struct RecipeRowView: View {
+    @State private var image: UIImage?
+    
     let cuisine: String
     let name: String
     let smallPhotoURL: String?
     
     var body: some View {
         HStack(spacing: 24) {
-            if let smallPhotoURL {
-                AsyncImage(url: URL(string: smallPhotoURL)) { image in
-                    image
-                        .resizable()
-                        .aspectRatio(contentMode: .fill)
-                        .frame(width: 48, height: 48)
-                        .clipShape(RoundedRectangle(cornerRadius: 8.0))
-                } placeholder: {
-                    ProgressView()
-                        .frame(width: 48, height: 48)
-                }
-
+            if let image {
+                Image(uiImage: image)
+                    .resizable()
+                    .aspectRatio(contentMode: .fill)
+                    .frame(width: 48, height: 48)
+                    .clipShape(RoundedRectangle(cornerRadius: 8.0))
             } else {
                 Image(systemName: "camera.metering.unknown")
                     .resizable()
@@ -39,12 +35,13 @@ struct RecipeRowView: View {
                 Text(cuisine)
                     .font(.subheadline)
             }
-            
-            Spacer()
         }
-        .padding(16)
-        .background(Color(.tertiarySystemFill))
-        .clipShape(RoundedRectangle(cornerRadius: 8.0))
+        .task {
+            if let smallPhotoURL {
+                let fetchedImage = await ImageFetcher.shared.fetchImage(for: smallPhotoURL)
+                image = fetchedImage
+            }
+        }
     }
 }
 

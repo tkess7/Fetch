@@ -10,13 +10,20 @@ import Observation
 
 @Observable class RecipesViewModel {
     var recipes: [Recipe] = []
-    var errorFetchingRecipeData = false
+    var recipeViewState: RecipeViewState = .undetermined
+    
+    private let recipeService: RecipeRetrieving
+    
+    init(recipeService: RecipeRetrieving) {
+        self.recipeService = recipeService
+    }
     
     func initializeRecipes() async {
         await fetchRecipeData()
     }
     
     func refreshRecipes() async {
+        recipeViewState = .undetermined
         recipes = []
         
         await fetchRecipeData()
@@ -24,12 +31,24 @@ import Observation
     
     func fetchRecipeData() async {
         do {
-            let result = try await URLSession.shared.data(from: URL(string: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")!)
-            let recipes = try JSONDecoder().decode(Recipes.self, from: result.0)
+            let recipes = try await recipeService.retrieveRecipes(for: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
             self.recipes = recipes.recipes
+        } catch _ as DecodingError {
+            recipes = []
+            recipeViewState = .decodingError
+        } catch RecipeServiceError.invalidURL {
+            recipes = []
+            recipeViewState = .urlError
         } catch {
             recipes = []
-            errorFetchingRecipeData = true
+            recipeViewState = .generalError
         }
     }
+}
+
+enum RecipeViewState {
+    case decodingError
+    case generalError
+    case undetermined
+    case urlError
 }

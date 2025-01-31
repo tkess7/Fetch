@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct RecipeListView: View {
-    @State private var recipesViewModel = RecipesViewModel()
+    @State private var recipesViewModel = RecipesViewModel(recipeService: RecipeServices())
     @State private var searchInput = ""
     
     var recipeSearchResult: [Recipe] {
@@ -23,16 +23,20 @@ struct RecipeListView: View {
     
     var body: some View {
         NavigationStack {
-            ScrollView {
-                LazyVStack(alignment: .leading, spacing: 16) {
-                    ForEach(recipeSearchResult) { recipe in
-                        RecipeRowView(cuisine: recipe.cuisine, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL)
-                    }
-                }
-                .padding(.horizontal)
+            List(recipeSearchResult) { recipe in
+                RecipeRowView(cuisine: recipe.cuisine, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL)
             }
             .overlay {
-                if recipeSearchResult.isEmpty {
+                switch recipesViewModel.recipeViewState {
+                case .decodingError:
+                    RecipesDecodingErrorView()
+                case .generalError, .urlError:
+                    RecipesGeneralErrorView()
+                case .undetermined:
+                    EmptyView()
+                }
+                
+                if recipeSearchResult.isEmpty && recipesViewModel.recipeViewState == .undetermined {
                     ContentUnavailableView.search
                 }
             }
