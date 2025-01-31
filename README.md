@@ -4,6 +4,8 @@
 
 ### Time Spent: Approximately how long did you spend working on this project? How did you allocate your time?
 
+Thursday January 30th - Spent 1 hour on initial project setup. Also set up data retrieval and list view.
+
 ### Trade-offs and Decisions: Did you make any significant trade-offs in your approach?
 
 ### Weakest Part of the Project: What do you think is the weakest part of your project?
