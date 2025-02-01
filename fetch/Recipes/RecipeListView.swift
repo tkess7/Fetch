@@ -24,20 +24,21 @@ struct RecipeListView: View {
     var body: some View {
         NavigationStack {
             List(recipeSearchResult) { recipe in
-                RecipeRowView(cuisine: recipe.cuisine, largePhotoURL: recipe.largePhotoURL, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL)
+                RecipeRowView(cuisine: recipe.cuisine, largePhotoURL: recipe.largePhotoURL, name: recipe.name, smallPhotoURL: recipe.smallPhotoURL, uuid: recipe.uuid)
             }
+            .tint(.gray)
             .overlay {
                 switch recipesViewModel.recipeViewState {
                 case .decodingError:
                     RecipesDecodingErrorView()
                 case .generalError, .urlError:
                     RecipesGeneralErrorView()
-                case .undetermined:
-                    EmptyView()
-                }
-                
-                if recipeSearchResult.isEmpty && recipesViewModel.recipeViewState == .undetermined {
+                case .success where recipesViewModel.recipes.isEmpty:
+                    NoRecipesView()
+                case .success where recipeSearchResult.isEmpty:
                     ContentUnavailableView.search
+                case .undetermined, .success:
+                    EmptyView()
                 }
             }
             .task {

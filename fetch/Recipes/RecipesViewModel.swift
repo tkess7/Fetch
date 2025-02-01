@@ -14,6 +14,14 @@ import Observation
     
     private let recipeService: RecipeRetrieving
     
+    private let recipeURLs = [
+        "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json",
+        "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-malformed.json",
+        "https://d3jbb8n5wk0qxi.cloudfront.net/recipes-empty.json"
+    ]
+    
+    private var recipeURLIndex = 0
+    
     init(recipeService: RecipeRetrieving) {
         self.recipeService = recipeService
     }
@@ -30,9 +38,15 @@ import Observation
     }
     
     func fetchRecipeData() async {
+        // Cycle through recipeURLs when retrieving data. The order will be
+        // valid recipes, malformed, then empty.
+        let recipeURL = recipeURLs[recipeURLIndex]
+        recipeURLIndex = (recipeURLIndex + 1) % recipeURLs.count
+        
         do {
-            let recipes = try await recipeService.retrieveRecipes(for: "https://d3jbb8n5wk0qxi.cloudfront.net/recipes.json")
+            let recipes = try await recipeService.retrieveRecipes(for: recipeURL)
             self.recipes = recipes.recipes
+            recipeViewState = .success
         } catch _ as DecodingError {
             recipes = []
             recipeViewState = .decodingError
@@ -49,6 +63,7 @@ import Observation
 enum RecipeViewState {
     case decodingError
     case generalError
+    case success
     case undetermined
     case urlError
 }

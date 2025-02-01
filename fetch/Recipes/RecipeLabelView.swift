@@ -13,6 +13,7 @@ struct RecipeLabelView: View {
     let cuisine: String
     let name: String
     let smallPhotoURL: String?
+    let uuid: String
     
     var body: some View {
         HStack(spacing: 24) {
@@ -38,7 +39,7 @@ struct RecipeLabelView: View {
         }
         .task {
             if let smallPhotoURL {
-                let fetchedImage = await ImageFetcher.shared.fetchImage(for: smallPhotoURL)
+                let fetchedImage = await ImageFetcher.shared.fetchImage(for: smallPhotoURL, with: uuid)
                 smallImage = fetchedImage
             }
         }
@@ -46,5 +47,5 @@ struct RecipeLabelView: View {
 }
 
 #Preview {
-    RecipeLabelView(cuisine: "Malaysian", name: "Apam Balik", smallPhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg")
+    RecipeLabelView(cuisine: "Malaysian", name: "Apam Balik", smallPhotoURL: "https://d3jbb8n5wk0qxi.cloudfront.net/photos/b9ab0071-b281-4bee-b361-ec340d405320/small.jpg", uuid: UUID().uuidString)
 }
