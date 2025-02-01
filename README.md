@@ -1,7 +1,6 @@
 ### Summary: Include screen shots or a video of your app highlighting its features
 
-![Recipes list](fetch/recipeslist.png)
-![Recipe expanded](fetch/recipesexpanded.png)
+<img src="fetch/recipeslist.png" alt="drawing" height="750"/> <img src="fetch/recipesexpanded.png" alt="drawing" height="750"/>
 
 ### Focus Areas: What specific areas of the project did you prioritize? Why did you choose to focus on these areas?
 
