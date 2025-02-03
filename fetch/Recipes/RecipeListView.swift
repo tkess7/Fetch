@@ -37,7 +37,9 @@ struct RecipeListView: View {
                     NoRecipesView()
                 case .success where recipeSearchResult.isEmpty:
                     ContentUnavailableView.search
-                case .undetermined, .success:
+                case .undetermined:
+                    ProgressView()
+                case .success:
                     EmptyView()
                 }
             }

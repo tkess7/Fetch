@@ -38,6 +38,9 @@ import Observation
     }
     
     func fetchRecipeData() async {
+        // Intentional 3 second delay for demo purposes.
+        try? await Task.sleep(nanoseconds: 3_000_000_000)
+        
         // Cycle through recipeURLs when retrieving data. The order will be
         // valid recipes, malformed, then empty.
         let recipeURL = recipeURLs[recipeURLIndex]
